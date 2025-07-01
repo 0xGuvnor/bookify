@@ -1,6 +1,6 @@
 function EventsPage() {
   return (
-    <div className="min-h-screenx h-[150vh] bg-gradient-to-br from-blue-50 to-indigo-100 pt-16">
+    <div className="min-h-screenx h-[150vh] bg-gradient-to-br from-blue-50 to-indigo-100 pt-14">
       <div className="container mx-auto px-4 py-16">
         <div className="text-center">
           <h1 className="mb-6 text-4xl font-bold text-gray-900 md:text-6xl">

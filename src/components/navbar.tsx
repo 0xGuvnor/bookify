@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import {
   SignInButton,
@@ -9,9 +12,41 @@ import {
 import Link from "next/link";
 
 export default function Navbar() {
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    const controlNavbar = () => {
+      const currentScrollY = window.scrollY;
+
+      // Show navbar when at top of page
+      if (currentScrollY < 10) {
+        setIsVisible(true);
+      }
+      // Hide navbar when scrolling down, show when scrolling up
+      else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        setIsVisible(false);
+      } else if (currentScrollY < lastScrollY) {
+        setIsVisible(true);
+      }
+
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener("scroll", controlNavbar);
+
+    return () => {
+      window.removeEventListener("scroll", controlNavbar);
+    };
+  }, [lastScrollY]);
+
   return (
-    <header className="glass-navbar-strong fixed inset-x-16 top-4 z-50 mx-auto max-w-7xl rounded-full backdrop-blur-xs">
-      <div className="relative px-6 sm:px-8 lg:px-12">
+    <header
+      className={`glass-navbar-strong fixed inset-x-16 top-8 z-50 mx-auto max-w-4xl rounded-full backdrop-blur-xs transition-transform duration-700 ease-in-out ${
+        isVisible ? "translate-y-0" : "-translate-y-32"
+      }`}
+    >
+      <div className="relative px-1 sm:px-2 lg:px-4">
         <div className="flex h-14 items-center justify-between">
           {/* Logo - Left Side */}
           <Link
