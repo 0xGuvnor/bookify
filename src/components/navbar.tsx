@@ -19,7 +19,7 @@ export default function Navbar() {
             className="smooth-transition z-10 flex cursor-pointer items-center"
           >
             <Image
-              src="/bookify-logo-2.png"
+              src="/logos/bookify-logo-2.png"
               alt="Bookify Logo"
               width={120}
               height={120}

@@ -9,7 +9,7 @@ function RegisterPage() {
         <div className="mb-4 text-center sm:mb-6 lg:mb-8">
           <div className="flex justify-center">
             <Image
-              src="/bookify-logo.png"
+              src="/logos/bookify-logo.png"
               alt="Bookify Logo"
               width={160}
               height={160}
