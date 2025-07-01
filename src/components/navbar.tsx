@@ -49,6 +49,7 @@ export default function Navbar() {
               className="smooth-transition group relative text-sm font-medium text-gray-700 hover:text-gray-900"
             >
               About
+              <span className="smooth-transition absolute -bottom-1 left-0 h-0.5 w-0 bg-gray-900 group-hover:w-full"></span>
             </a>
           </nav>
 

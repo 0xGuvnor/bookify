@@ -1,5 +1,6 @@
 "use client";
 
+import { SignUpButton } from "@clerk/nextjs";
 import { animate } from "motion";
 import { useEffect, useRef } from "react";
 
@@ -83,21 +84,41 @@ function LandingPage() {
         <div ref={heroRef} className="text-center">
           <h1
             ref={titleRef}
-            className="mb-6 text-4xl font-bold text-gray-900 md:text-6xl"
+            className="mb-6 bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 bg-clip-text pb-2 text-4xl leading-tight font-bold text-transparent md:text-6xl md:leading-tight"
           >
-            Schedule meetings with <span className="text-indigo-600">ease</span>
+            Schedule meetings with{" "}
+            <span className="animate-pulse bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 bg-clip-text font-extrabold text-transparent">
+              ease
+            </span>
           </h1>
           <p
             ref={subtitleRef}
-            className="mx-auto mb-8 max-w-2xl text-xl text-gray-600"
+            className="mx-auto mb-8 max-w-2xl text-xl font-medium text-gray-700"
           >
-            Bookify makes it simple to schedule meetings, manage your calendar,
-            and connect with anyone, anywhere. Join thousands of professionals
-            who trust Bookify for their scheduling needs.
+            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text font-semibold text-transparent">
+              Bookify
+            </span>{" "}
+            makes it simple to schedule meetings, manage your calendar, and
+            connect with anyone, anywhere. Join thousands of professionals who
+            trust{" "}
+            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text font-semibold text-transparent">
+              Bookify
+            </span>{" "}
+            for their scheduling needs.
           </p>
           <div ref={ctaRef} className="space-y-4">
-            <p className="animate-typing text-lg text-gray-700">
-              Ready to streamline your scheduling? Sign up to get started!
+            <p className="animate-typing text-lg font-semibold">
+              Ready to{" "}
+              <span className="bg-gradient-to-r from-emerald-500 to-teal-500 bg-clip-text text-transparent">
+                streamline
+              </span>{" "}
+              your scheduling?{" "}
+              <SignUpButton>
+                <span className="cursor-pointer border-b-2 border-orange-500 bg-gradient-to-r from-orange-500 to-pink-500 bg-clip-text text-transparent transition-all duration-300 hover:scale-110 hover:border-orange-400 hover:from-orange-400 hover:to-pink-400 hover:drop-shadow-[0_0_8px_rgba(249,115,22,0.5)] active:scale-95">
+                  Sign up
+                </span>
+              </SignUpButton>{" "}
+              to get started! 🚀
             </p>
           </div>
         </div>
