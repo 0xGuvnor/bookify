@@ -10,10 +10,24 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { PrivateNavLinks } from "@/lib/constants";
 
-export default function Navbar() {
+interface SerializableUser {
+  id: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  imageUrl?: string;
+}
+
+interface Props {
+  user?: SerializableUser | null;
+}
+
+export default function Navbar({ user }: Props) {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const pathname = usePathname();
 
   useEffect(() => {
     const controlNavbar = () => {
@@ -64,28 +78,76 @@ export default function Navbar() {
           </Link>
 
           {/* Center Navigation - Absolutely Centered */}
-          <nav className="absolute top-1/2 left-1/2 hidden -translate-x-1/2 -translate-y-1/2 transform items-center space-x-8 md:flex">
-            <a
-              href="#features"
-              className="smooth-transition group relative text-sm font-medium text-gray-700 hover:text-gray-900"
-            >
-              Features
-              <span className="smooth-transition absolute -bottom-1 left-0 h-0.5 w-0 bg-gray-900 group-hover:w-full"></span>
-            </a>
-            <a
-              href="#pricing"
-              className="smooth-transition group relative text-sm font-medium text-gray-700 hover:text-gray-900"
-            >
-              Pricing
-              <span className="smooth-transition absolute -bottom-1 left-0 h-0.5 w-0 bg-gray-900 group-hover:w-full"></span>
-            </a>
-            <a
-              href="#about"
-              className="smooth-transition group relative text-sm font-medium text-gray-700 hover:text-gray-900"
-            >
-              About
-              <span className="smooth-transition absolute -bottom-1 left-0 h-0.5 w-0 bg-gray-900 group-hover:w-full"></span>
-            </a>
+          <nav className="absolute top-1/2 left-1/2 hidden -translate-x-1/2 -translate-y-1/2 transform items-center space-x-6 md:flex lg:space-x-8">
+            {user ? (
+              // Private navigation for authenticated users
+              PrivateNavLinks.map((link) => {
+                const isActive = pathname === link.route;
+                return (
+                  <Link
+                    key={link.route}
+                    href={link.route}
+                    className={`smooth-transition group relative flex items-center gap-x-1 text-sm font-medium ${
+                      isActive
+                        ? "text-blue-600"
+                        : "text-gray-700 hover:text-gray-900"
+                    }`}
+                    title={link.label}
+                  >
+                    <div
+                      className={`relative flex-shrink-0 ${isActive ? "scale-110" : "group-hover:scale-105"} smooth-transition`}
+                    >
+                      <Image
+                        src={link.imageUrl}
+                        alt={link.label}
+                        width={32}
+                        height={32}
+                        className={`${
+                          isActive
+                            ? "opacity-100 drop-shadow-md"
+                            : "opacity-75 group-hover:opacity-100"
+                        } smooth-transition`}
+                      />
+                    </div>
+                    <span className="hidden truncate text-sm lg:inline-block">
+                      {link.label}
+                    </span>
+                    <span
+                      className={`smooth-transition absolute -bottom-1 left-1/2 h-0.5 -translate-x-1/2 ${
+                        isActive
+                          ? "w-8 bg-blue-600 lg:left-0 lg:w-full lg:translate-x-0"
+                          : "w-0 bg-gray-900 group-hover:w-6 lg:left-0 lg:translate-x-0 lg:group-hover:w-full"
+                      }`}
+                    ></span>
+                  </Link>
+                );
+              })
+            ) : (
+              // Public navigation for non-authenticated users
+              <>
+                <a
+                  href="#features"
+                  className="smooth-transition group relative text-sm font-medium text-gray-700 hover:text-gray-900"
+                >
+                  Features
+                  <span className="smooth-transition absolute -bottom-1 left-0 h-0.5 w-0 bg-gray-900 group-hover:w-full"></span>
+                </a>
+                <a
+                  href="#pricing"
+                  className="smooth-transition group relative text-sm font-medium text-gray-700 hover:text-gray-900"
+                >
+                  Pricing
+                  <span className="smooth-transition absolute -bottom-1 left-0 h-0.5 w-0 bg-gray-900 group-hover:w-full"></span>
+                </a>
+                <a
+                  href="#about"
+                  className="smooth-transition group relative text-sm font-medium text-gray-700 hover:text-gray-900"
+                >
+                  About
+                  <span className="smooth-transition absolute -bottom-1 left-0 h-0.5 w-0 bg-gray-900 group-hover:w-full"></span>
+                </a>
+              </>
+            )}
           </nav>
 
           {/* Auth Section - Right Side */}
