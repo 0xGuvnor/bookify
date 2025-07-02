@@ -1,4 +1,5 @@
 import { SignIn } from "@clerk/nextjs";
+import Image from "next/image";
 
 function LoginPage() {
   return (
@@ -7,12 +8,13 @@ function LoginPage() {
         {/* Logo and branding section */}
         <div className="mb-4 text-center sm:mb-6 lg:mb-8">
           <div className="flex justify-center">
-            <img
+            <Image
               src="/logos/bookify-logo-animated.webp"
               alt="Bookify animated logo"
-              width="160"
-              height="160"
+              width={160}
+              height={160}
               className="size-24 sm:size-32 lg:size-36 xl:size-40"
+              priority
             />
           </div>
         </div>

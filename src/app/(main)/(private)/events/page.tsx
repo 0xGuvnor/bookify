@@ -13,7 +13,7 @@ function EventsPage() {
           </span>
         </h1>
         <p className="mx-auto mb-8 max-w-2xl text-xl text-gray-600">
-          You're all set! Your dashboard is ready for you to manage your
+          You&apos;re all set! Your dashboard is ready for you to manage your
           appointments, set your availability, and connect with clients.
         </p>
 
