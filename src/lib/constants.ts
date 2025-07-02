@@ -1,9 +1,9 @@
 export const PrivateNavLinks = [
   { imageUrl: "/assets/events.png", route: "/events", label: "My Events" },
   {
-    imageUrl: "/assets/schedule.svg",
+    imageUrl: "/assets/schedule.png",
     route: "/schedule",
     label: "My Schedule",
   },
-  { imageUrl: "/assets/public.svg", route: "/book", label: "Public Profile" },
+  { imageUrl: "/assets/profile.png", route: "/book", label: "Public Profile" },
 ] as const;

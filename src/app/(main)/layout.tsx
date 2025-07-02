@@ -22,7 +22,7 @@ export default async function MainLayout({
   return (
     <main>
       <Navbar user={user} />
-      <section className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 pt-40">
+      <section className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 pt-32 sm:pt-36 md:pt-40 lg:pt-44 xl:pt-48">
         {children}
       </section>
     </main>

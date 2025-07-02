@@ -14,26 +14,40 @@ export const eventFormSchema = z.object({
     .max(500, {
       message: "Description must be less than 500 characters.",
     })
-    .optional(),
+    .optional()
+    .or(z.literal("")),
   duration: z
     .number()
     .min(15, {
       message: "Duration must be at least 15 minutes.",
     })
-    .max(480, {
-      message: "Duration must be less than 8 hours.",
+    .max(721, {
+      message: "Duration must be less than 12 hours.",
     }),
   location: z
     .string()
     .max(200, {
       message: "Location must be less than 200 characters.",
     })
-    .optional(),
+    .optional()
+    .or(z.literal("")),
   meetingLink: z
     .string()
-    .url({
-      message: "Please enter a valid URL.",
-    })
+    .refine(
+      (value) => {
+        // Allow empty strings or valid URLs
+        if (!value || value.trim() === "") return true;
+        try {
+          new URL(value);
+          return true;
+        } catch {
+          return false;
+        }
+      },
+      {
+        message: "Please enter a valid URL or leave blank.",
+      },
+    )
     .optional()
     .or(z.literal("")),
   isActive: z.boolean(),
@@ -48,7 +62,19 @@ export const eventFormSchema = z.object({
     })
     .max(50, {
       message: "Maximum 50 participants allowed.",
-    }),
+    })
+    .refine(
+      (emails) => {
+        // Ensure no duplicate emails
+        const uniqueEmails = new Set(
+          emails.map((email) => email.toLowerCase()),
+        );
+        return uniqueEmails.size === emails.length;
+      },
+      {
+        message: "Duplicate email addresses are not allowed.",
+      },
+    ),
 });
 
 export type EventFormData = z.infer<typeof eventFormSchema>;

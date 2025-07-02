@@ -1,9 +1,16 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { CalendarIcon, ClockIcon, MapPinIcon, MailIcon } from "lucide-react";
-import { useForm } from "react-hook-form";
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -23,14 +30,30 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { createEvent } from "@/lib/actions/events";
 import { eventFormSchema, type EventFormData } from "@/lib/validations";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CalendarIcon, ClockIcon, MailIcon, MapPinIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { startTransition, useActionState, useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
-interface Props {
-  onSubmit?: (data: EventFormData) => void;
-  isLoading?: boolean;
-}
+const initialState = {
+  success: false,
+  message: "",
+  errors: {},
+};
 
-function NewEventForm({ onSubmit, isLoading = false }: Props) {
+function NewEventForm() {
+  const router = useRouter();
+  const [participantsInput, setParticipantsInput] = useState("");
+  const [state, formAction, isPending] = useActionState(
+    createEvent,
+    initialState,
+  );
+
   const form = useForm<EventFormData>({
     resolver: zodResolver(eventFormSchema),
     defaultValues: {
@@ -45,12 +68,39 @@ function NewEventForm({ onSubmit, isLoading = false }: Props) {
   });
 
   function handleSubmit(data: EventFormData) {
-    console.log("Event data to submit:", data);
+    // Clear any existing errors
+    form.clearErrors();
 
-    if (onSubmit) {
-      onSubmit(data);
-    }
+    // Call the server action inside a transition
+    startTransition(() => {
+      formAction(data);
+    });
   }
+
+  function handleCancel() {
+    router.push("/events");
+  }
+
+  // Handle successful form submission
+  useEffect(() => {
+    if (state.success) {
+      // Show success toast
+      toast.success("Event created successfully!", {
+        description: "Your event is now available for booking.",
+      });
+
+      // Navigate to events page on success
+      router.push("/events");
+    } else if (state.errors) {
+      // Set field-specific errors if they exist
+      Object.entries(state.errors).forEach(([field, messages]) => {
+        form.setError(field as keyof EventFormData, {
+          type: "server",
+          message: messages[0],
+        });
+      });
+    }
+  }, [state, router, form]);
 
   return (
     <Card className="mx-auto w-full max-w-2xl">
@@ -68,6 +118,12 @@ function NewEventForm({ onSubmit, isLoading = false }: Props) {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)}>
           <CardContent className="space-y-6">
+            {!state.success && state.message && (
+              <div className="rounded-md bg-red-50 p-4 text-sm text-red-800">
+                {state.message}
+              </div>
+            )}
+
             <FormField
               control={form.control}
               name="title"
@@ -92,8 +148,7 @@ function NewEventForm({ onSubmit, isLoading = false }: Props) {
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <textarea
-                      className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex min-h-[80px] w-full rounded-md border px-3 py-2 text-base focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                    <Textarea
                       placeholder="Describe what this meeting is about..."
                       {...field}
                     />
@@ -121,7 +176,7 @@ function NewEventForm({ onSubmit, isLoading = false }: Props) {
                       <Input
                         type="number"
                         min="15"
-                        max="480"
+                        max="721"
                         step="15"
                         {...field}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -148,13 +203,12 @@ function NewEventForm({ onSubmit, isLoading = false }: Props) {
                     Participant Emails
                   </FormLabel>
                   <FormControl>
-                    <textarea
-                      className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex min-h-[100px] w-full rounded-md border px-3 py-2 text-base focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                    <Textarea
                       placeholder="Enter email addresses separated by commas&#10;e.g., john@example.com, jane@example.com"
-                      value={
-                        Array.isArray(field.value) ? field.value.join(", ") : ""
-                      }
+                      value={participantsInput}
                       onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                        setParticipantsInput(e.target.value);
+                        // Update form field with array of emails
                         const emails = e.target.value
                           .split(",")
                           .map((email) => email.trim())
@@ -220,20 +274,53 @@ function NewEventForm({ onSubmit, isLoading = false }: Props) {
           </CardContent>
 
           <CardFooter className="mt-6 flex flex-col gap-4 sm:flex-row sm:justify-between">
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full sm:w-auto"
-              onClick={() => form.reset()}
-            >
-              Reset Form
-            </Button>
+            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:gap-4">
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    className="w-full sm:w-auto"
+                  >
+                    Cancel
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Cancel Event Creation?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to cancel creating this event? Any
+                      unsaved changes will be lost.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Stay</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleCancel}>
+                      Yes, Cancel
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full sm:w-auto"
+                onClick={() => {
+                  form.reset();
+                  setParticipantsInput("");
+                }}
+              >
+                Reset Form
+              </Button>
+            </div>
+
             <Button
               type="submit"
+              disabled={isPending}
               className="w-full sm:w-auto"
-              disabled={isLoading}
             >
-              {isLoading ? "Creating Event..." : "Create Event"}
+              {isPending ? "Creating Event..." : "Create Event"}
             </Button>
           </CardFooter>
         </form>

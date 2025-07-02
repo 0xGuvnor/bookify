@@ -19,14 +19,17 @@ function EventsPage() {
 
         {/* Create New Event Button */}
         <div className="mb-12">
-          <Link href="/events/new">
-            <Button
-              size="lg"
-              className="cursor-pointer rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 px-8 py-3 font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:from-indigo-600 hover:to-purple-700 hover:shadow-xl lg:py-6 lg:text-xl"
-            >
-              ✨ Create New Event
-            </Button>
-          </Link>
+          <Button
+            asChild
+            size="lg"
+            className="gradient-button cursor-pointer rounded-full px-8 py-3 font-semibold text-white shadow-lg lg:py-6 lg:text-xl"
+          >
+            <Link href="/events/new">
+              <span className="smooth-transition hover:scale-105">
+                ✨ Create New Event
+              </span>
+            </Link>
+          </Button>
         </div>
 
         <div className="mx-auto mt-12 grid max-w-4xl grid-cols-1 gap-6 md:grid-cols-3">

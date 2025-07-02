@@ -35,11 +35,14 @@ export const eventsTable = pgTable(
   "events",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    name: text("name").notNull(),
+    title: text("title").notNull(),
     description: text("description"),
     duration: integer("duration").notNull(), // Duration in minutes
+    location: text("location"),
+    meetingLink: text("meeting_link"),
     clerkUserId: text("clerk_user_id").notNull(),
     isActive: boolean("is_active").notNull().default(true),
+    participants: text("participants").notNull(), // JSON array of email strings
     ...timestamps,
   },
   (table) => [

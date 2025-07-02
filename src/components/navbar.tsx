@@ -56,29 +56,39 @@ export default function Navbar({ user }: Props) {
 
   return (
     <header
-      className={`glass-navbar-strong fixed inset-x-16 top-8 z-50 mx-auto max-w-4xl rounded-full backdrop-blur-xs transition-transform duration-700 ease-in-out ${
+      className={`glass-navbar-strong fixed inset-x-4 top-8 z-50 mx-auto max-w-4xl rounded-full backdrop-blur-xs transition-transform duration-700 ease-in-out md:inset-x-16 ${
         isVisible ? "translate-y-0" : "-translate-y-32"
       }`}
     >
       <div className="relative px-1 sm:px-2 lg:px-4">
-        <div className="flex h-14 items-center justify-between">
+        <div className="flex h-10 items-center justify-between md:h-14">
           {/* Logo - Left Side */}
           <Link
             href="/"
             className="smooth-transition z-10 flex cursor-pointer items-center"
           >
+            {/* Mobile Logo */}
+            <Image
+              src="/logos/bookify-logo.png"
+              alt="Bookify Logo"
+              width={44}
+              height={44}
+              priority
+              className="h-10 w-10 md:hidden"
+            />
+            {/* Desktop Logo */}
             <Image
               src="/logos/bookify-logo-2.png"
               alt="Bookify Logo"
               width={120}
               height={120}
               priority
-              className="h-24 w-auto"
+              className="hidden h-24 w-auto md:block"
             />
           </Link>
 
           {/* Center Navigation - Absolutely Centered */}
-          <nav className="absolute top-1/2 left-1/2 hidden -translate-x-1/2 -translate-y-1/2 transform items-center space-x-6 md:flex lg:space-x-8">
+          <nav className="absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 transform items-center space-x-8 md:space-x-6 lg:space-x-8">
             {user ? (
               // Private navigation for authenticated users
               PrivateNavLinks.map((link) => {
@@ -100,9 +110,9 @@ export default function Navbar({ user }: Props) {
                       <Image
                         src={link.imageUrl}
                         alt={link.label}
-                        width={32}
-                        height={32}
-                        className={`${
+                        width={44}
+                        height={44}
+                        className={`size-9 md:h-8 md:w-8 ${
                           isActive
                             ? "opacity-100 drop-shadow-md"
                             : "opacity-75 group-hover:opacity-100"
@@ -115,33 +125,33 @@ export default function Navbar({ user }: Props) {
                     <span
                       className={`smooth-transition absolute -bottom-1 left-1/2 h-0.5 -translate-x-1/2 ${
                         isActive
-                          ? "w-8 bg-blue-600 lg:left-0 lg:w-full lg:translate-x-0"
-                          : "w-0 bg-gray-900 group-hover:w-6 lg:left-0 lg:translate-x-0 lg:group-hover:w-full"
+                          ? "w-4 bg-blue-600 md:w-8 lg:left-0 lg:w-full lg:translate-x-0"
+                          : "w-0 bg-gray-900 group-hover:w-3 md:group-hover:w-6 lg:left-0 lg:translate-x-0 lg:group-hover:w-full"
                       }`}
                     ></span>
                   </Link>
                 );
               })
             ) : (
-              // Public navigation for non-authenticated users
+              // Public navigation for non-authenticated users - hidden on mobile
               <>
                 <a
                   href="#features"
-                  className="smooth-transition group relative text-sm font-medium text-gray-700 hover:text-gray-900"
+                  className="smooth-transition group relative hidden text-sm font-medium text-gray-700 hover:text-gray-900 md:block"
                 >
                   Features
                   <span className="smooth-transition absolute -bottom-1 left-0 h-0.5 w-0 bg-gray-900 group-hover:w-full"></span>
                 </a>
                 <a
                   href="#pricing"
-                  className="smooth-transition group relative text-sm font-medium text-gray-700 hover:text-gray-900"
+                  className="smooth-transition group relative hidden text-sm font-medium text-gray-700 hover:text-gray-900 md:block"
                 >
                   Pricing
                   <span className="smooth-transition absolute -bottom-1 left-0 h-0.5 w-0 bg-gray-900 group-hover:w-full"></span>
                 </a>
                 <a
                   href="#about"
-                  className="smooth-transition group relative text-sm font-medium text-gray-700 hover:text-gray-900"
+                  className="smooth-transition group relative hidden text-sm font-medium text-gray-700 hover:text-gray-900 md:block"
                 >
                   About
                   <span className="smooth-transition absolute -bottom-1 left-0 h-0.5 w-0 bg-gray-900 group-hover:w-full"></span>
@@ -159,7 +169,7 @@ export default function Navbar({ user }: Props) {
                 </button>
               </SignInButton>
               <SignUpButton>
-                <button className="smooth-transition cursor-pointer rounded-full bg-gray-900 px-6 py-2.5 text-sm font-medium text-white shadow-lg hover:scale-105 hover:bg-gray-800 hover:shadow-xl">
+                <button className="smooth-transition cursor-pointer rounded-full bg-gray-900 px-4 py-2 text-xs font-medium text-white shadow-lg hover:scale-105 hover:bg-gray-800 hover:shadow-xl md:px-6 md:py-2.5 md:text-sm">
                   Get Started
                 </button>
               </SignUpButton>
@@ -169,7 +179,7 @@ export default function Navbar({ user }: Props) {
                 appearance={{
                   elements: {
                     avatarBox:
-                      "size-9 rounded-full ring-2 ring-gray-300/50 hover:ring-gray-400/70 smooth-transition hover:scale-105",
+                      "size-8 rounded-full ring-2 ring-gray-300/50 hover:ring-gray-400/70 smooth-transition hover:scale-105 md:size-9",
                   },
                 }}
               />
