@@ -78,7 +78,7 @@ function LandingPage() {
   return (
     <div
       ref={containerRef}
-      className="min-h-screenx h-[150vh] bg-gradient-to-br from-blue-50 to-indigo-100 pt-14"
+      className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 pt-14"
     >
       <div className="container mx-auto px-4 py-16">
         <div ref={heroRef} className="text-center">

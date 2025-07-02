@@ -11,7 +11,7 @@ import {
 } from "@clerk/nextjs";
 import Link from "next/link";
 
-export default function Navbar() {
+export default function PublicNavbar() {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 

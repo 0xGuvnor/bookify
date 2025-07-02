@@ -1,20 +1,26 @@
 import { SignUp } from "@clerk/nextjs";
-import Image from "next/image";
 
 function RegisterPage() {
   return (
-    <div className="flex min-h-screen flex-col items-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-4 pt-8 sm:p-6 sm:pt-16 lg:p-8 lg:pt-36">
+    <div className="flex min-h-screen flex-col items-center p-4 pt-8 sm:p-6 sm:pt-16 lg:p-8 lg:pt-36">
       <div className="w-full max-w-sm sm:max-w-md lg:max-w-lg">
         {/* Logo and branding section */}
         <div className="mb-4 text-center sm:mb-6 lg:mb-8">
           <div className="flex justify-center">
-            <Image
-              src="/logos/bookify-logo.png"
-              alt="Bookify Logo"
-              width={160}
-              height={160}
+            <video
+              src="/logos/bookify-logo-animated.mp4"
+              width="160"
+              height="160"
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="none"
+              aria-label="Bookify animated logo"
               className="size-24 sm:size-32 lg:size-36 xl:size-40"
-            />
+            >
+              Your browser does not support the video tag.
+            </video>
           </div>
         </div>
 

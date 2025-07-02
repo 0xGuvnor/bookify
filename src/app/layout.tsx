@@ -1,4 +1,3 @@
-import Navbar from "@/components/navbar";
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -34,7 +33,6 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} bg-blue-50 antialiased`}
         >
-          <Navbar />
           {children}
         </body>
       </html>
