@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import EventCard from "./event-card";
-import EventSkeleton from "./event-skeleton";
+import EventSkeleton from "./skeletons/event-skeleton";
 import type { GetEventsResult } from "@/lib/types";
 
 interface Props {

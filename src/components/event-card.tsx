@@ -228,7 +228,7 @@ function EventCard({ eventsPromise }: Props) {
                                 "Share this link with your attendees to let them book this event.",
                             },
                           );
-                        } catch (error) {
+                        } catch {
                           toast.error("Failed to copy link 😅", {
                             description:
                               "Please try again or copy the URL manually.",

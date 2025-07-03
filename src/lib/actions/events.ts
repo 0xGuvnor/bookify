@@ -7,6 +7,7 @@ import type {
   UpdateEventResult,
   DeleteEventResult,
   GetEventsResult,
+  GetEventResult,
 } from "@/lib/types";
 import { eventFormSchema, type EventFormData } from "@/lib/validations";
 import { auth } from "@clerk/nextjs/server";
@@ -252,6 +253,56 @@ export async function getEvents(userId: string): Promise<GetEventsResult> {
     return {
       success: false,
       message: "Something went wrong while fetching events. Please try again.",
+    };
+  }
+}
+
+export async function getEvent(
+  userId: string,
+  eventId: string,
+): Promise<GetEventResult> {
+  try {
+    if (!userId) {
+      return {
+        success: false,
+        message: "User ID is required to fetch the event.",
+      };
+    }
+
+    if (!eventId) {
+      return {
+        success: false,
+        message: "Event ID is required to fetch the event.",
+      };
+    }
+
+    // Get the specific event for the user
+    const events = await db
+      .select()
+      .from(eventsTable)
+      .where(
+        and(eq(eventsTable.id, eventId), eq(eventsTable.clerkUserId, userId)),
+      )
+      .limit(1);
+
+    if (events.length === 0) {
+      return {
+        success: false,
+        message: "Event not found or you don't have permission to view it.",
+      };
+    }
+
+    // Return success with the event
+    return {
+      success: true,
+      event: events[0],
+    };
+  } catch (error) {
+    console.error("Failed to get event:", error);
+    return {
+      success: false,
+      message:
+        "Something went wrong while fetching the event. Please try again.",
     };
   }
 }
