@@ -18,12 +18,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Clock, Globe, Plus, Trash2, AlertTriangle } from "lucide-react";
-import { use, useTransition, useState, useCallback, useEffect } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
-import { toast } from "sonner";
-
 import { createSchedule, updateSchedule } from "@/lib/actions";
 import {
   COMMON_TIMEZONES,
@@ -33,13 +27,18 @@ import {
 import { DaysOfWeek } from "@/lib/db/schema";
 import type { GetScheduleResult } from "@/lib/types";
 import {
-  getDefaultAvailabilityForDay,
-  scheduleFormSchema,
   detectOverlaps,
+  getDefaultAvailabilityForDay,
   normalizeTimeFormat,
-  type ScheduleFormData,
+  scheduleFormSchema,
   type OverlapConflict,
+  type ScheduleFormData,
 } from "@/lib/validations";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AlertTriangle, Clock, Globe, Plus, Trash2 } from "lucide-react";
+import { use, useCallback, useEffect, useState, useTransition } from "react";
+import { useFieldArray, useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 interface Props {
   schedulePromise: Promise<GetScheduleResult>;
