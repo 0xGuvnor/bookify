@@ -36,23 +36,14 @@ import { eventFormSchema, type EventFormData } from "@/lib/validations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon, ClockIcon, MailIcon, MapPinIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { startTransition, useActionState, useEffect, useState } from "react";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-
-const initialState = {
-  success: false,
-  message: "",
-  errors: {},
-};
 
 function NewEventForm() {
   const router = useRouter();
   const [participantsInput, setParticipantsInput] = useState("");
-  const [state, formAction, isPending] = useActionState(
-    createEvent,
-    initialState,
-  );
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm<EventFormData>({
     resolver: zodResolver(eventFormSchema),
@@ -72,35 +63,50 @@ function NewEventForm() {
     form.clearErrors();
 
     // Call the server action inside a transition
-    startTransition(() => {
-      formAction(data);
+    startTransition(async () => {
+      try {
+        const result = await createEvent(data);
+
+        if (result.success) {
+          // Show success toast
+          toast.success("Event created successfully!", {
+            description: "Your event is now available for booking.",
+          });
+
+          // Navigate to events page on success
+          router.push("/events");
+        } else {
+          // Handle errors
+          if (result.errors) {
+            // Set field-specific errors if they exist
+            Object.entries(result.errors).forEach(([field, messages]) => {
+              form.setError(field as keyof EventFormData, {
+                type: "server",
+                message: messages[0],
+              });
+            });
+          }
+
+          // Show error toast with the message
+          if (result.message) {
+            toast.error("Failed to create event", {
+              description: result.message,
+            });
+          }
+        }
+      } catch (error) {
+        // Handle unexpected errors
+        console.error("Unexpected error:", error);
+        toast.error("Something went wrong", {
+          description: "Please try again later.",
+        });
+      }
     });
   }
 
   function handleCancel() {
     router.push("/events");
   }
-
-  // Handle successful form submission
-  useEffect(() => {
-    if (state.success) {
-      // Show success toast
-      toast.success("Event created successfully!", {
-        description: "Your event is now available for booking.",
-      });
-
-      // Navigate to events page on success
-      router.push("/events");
-    } else if (state.errors) {
-      // Set field-specific errors if they exist
-      Object.entries(state.errors).forEach(([field, messages]) => {
-        form.setError(field as keyof EventFormData, {
-          type: "server",
-          message: messages[0],
-        });
-      });
-    }
-  }, [state, router, form]);
 
   return (
     <Card className="mx-auto w-full max-w-2xl">
@@ -118,12 +124,6 @@ function NewEventForm() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)}>
           <CardContent className="space-y-6">
-            {!state.success && state.message && (
-              <div className="rounded-md bg-red-50 p-4 text-sm text-red-800">
-                {state.message}
-              </div>
-            )}
-
             <FormField
               control={form.control}
               name="title"

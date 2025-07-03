@@ -1,8 +1,20 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import CopyLinkCard from "@/components/copy-link-card";
+import EventsList from "@/components/events-list";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+import { getEvents } from "@/lib/actions";
 
-function EventsPage() {
+async function EventsPage() {
+  const { userId } = await auth();
+
+  if (!userId) {
+    redirect("/login");
+  }
+
+  const eventsPromise = getEvents(userId);
+
   return (
     <div className="container mx-auto px-4">
       <div className="text-center">
@@ -57,6 +69,9 @@ function EventsPage() {
             </div>
           </Link>
         </div>
+
+        {/* Events List with Suspense */}
+        <EventsList eventsPromise={eventsPromise} />
       </div>
     </div>
   );
