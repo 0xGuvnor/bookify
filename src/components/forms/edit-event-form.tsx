@@ -60,7 +60,7 @@ function EditEventForm({ eventPromise, eventId }: Props) {
   const [participantsInput, setParticipantsInput] = useState("");
   const [isPending, startTransition] = useTransition();
 
-  // Initialize form with default values
+  // Initialize form with default values - this hook must be called before any returns
   const form = useForm<EventFormData>({
     resolver: zodResolver(eventFormSchema),
     defaultValues: {
@@ -74,7 +74,49 @@ function EditEventForm({ eventPromise, eventId }: Props) {
     },
   });
 
-  // Handle case where event doesn't exist
+  // Memoize the parsed participants - this hook must be called before any returns
+  const { initialParticipants, initialParticipantsInput } = useMemo(() => {
+    // Handle case where event doesn't exist or is invalid
+    if (!eventResult.success || !eventResult.event) {
+      return {
+        initialParticipants: [],
+        initialParticipantsInput: "",
+      };
+    }
+
+    const participants = JSON.parse(eventResult.event.participants) as string[];
+    const participantsInput = participants.join(", ");
+    return {
+      initialParticipants: participants,
+      initialParticipantsInput: participantsInput,
+    };
+  }, [eventResult.success, eventResult.event?.participants]);
+
+  // Update form with actual event data - this hook must be called before any returns
+  useEffect(() => {
+    // Only update form if we have a valid event
+    if (eventResult.success && eventResult.event) {
+      const event = eventResult.event;
+      form.reset({
+        title: event.title,
+        description: event.description || "",
+        duration: event.duration,
+        location: event.location || "",
+        meetingLink: event.meetingLink || "",
+        isActive: event.isActive,
+        participants: initialParticipants,
+      });
+      setParticipantsInput(initialParticipantsInput);
+    }
+  }, [
+    eventResult.success,
+    eventResult.event,
+    initialParticipants,
+    initialParticipantsInput,
+    form,
+  ]);
+
+  // Handle case where event doesn't exist - now after all hooks are called
   if (!eventResult.success || !eventResult.event) {
     return (
       <Card className="mx-auto w-full max-w-2xl">
@@ -104,40 +146,6 @@ function EditEventForm({ eventPromise, eventId }: Props) {
   }
 
   const event = eventResult.event;
-
-  // Memoize the parsed participants to prevent infinite re-renders
-  const { initialParticipants, initialParticipantsInput } = useMemo(() => {
-    const participants = JSON.parse(event.participants) as string[];
-    const participantsInput = participants.join(", ");
-    return {
-      initialParticipants: participants,
-      initialParticipantsInput: participantsInput,
-    };
-  }, [event.participants]);
-
-  // Update form with actual event data once we know the event exists
-  useEffect(() => {
-    form.reset({
-      title: event.title,
-      description: event.description || "",
-      duration: event.duration,
-      location: event.location || "",
-      meetingLink: event.meetingLink || "",
-      isActive: event.isActive,
-      participants: initialParticipants,
-    });
-    setParticipantsInput(initialParticipantsInput);
-  }, [
-    event.title,
-    event.description,
-    event.duration,
-    event.location,
-    event.meetingLink,
-    event.isActive,
-    initialParticipants,
-    initialParticipantsInput,
-    form,
-  ]);
 
   function handleSubmit(data: EventFormData) {
     // Clear any existing errors
