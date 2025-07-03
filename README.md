@@ -1,36 +1,131 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📅 Bookify - Your Calendly Clone
 
-## Getting Started
+> Because scheduling meetings shouldn't be rocket science! 🚀
 
-First, run the development server:
+Bookify is a modern, full-featured scheduling application that lets you create events, manage your availability, and allow others to book time with you seamlessly. Built with the latest Next.js 15 App Router and a powerful tech stack.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## ✨ Features
+
+- **🔐 Authentication**: Secure user authentication with Clerk
+- **📅 Event Management**: Create, edit, and manage your scheduling events
+- **⏰ Availability Settings**: Set your working hours and availability
+- **🔗 Public Booking**: Share your booking link for others to schedule with you
+- **📱 Responsive Design**: Beautiful UI that works on all devices
+- **🎨 Modern UI**: Built with shadcn/ui and Tailwind CSS
+- **⚡ Real-time Updates**: Fast and responsive user experience
+- **🔒 Private Dashboard**: Manage your events and schedule privately
+
+## 🛠️ Tech Stack
+
+- **Framework**: Next.js 15 (App Router)
+- **Language**: TypeScript
+- **Database**: PostgreSQL with Drizzle ORM
+- **Authentication**: Clerk
+- **Styling**: Tailwind CSS + shadcn/ui
+- **Package Manager**: Bun
+- **Deployment**: Vercel-ready
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- Bun (preferred package manager)
+- PostgreSQL database
+
+### Installation
+
+1. **Clone the repository**
+
+   ```bash
+   git clone <your-repo-url>
+   cd bookify
+   ```
+
+2. **Install dependencies**
+
+   ```bash
+   bun install
+   ```
+
+3. **Set up environment variables**
+   Create a `.env.local` file in the root directory:
+
+   ```env
+   # Database
+   DATABASE_URL="your-postgresql-connection-string"
+
+   # Clerk Authentication
+   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="your-clerk-publishable-key"
+   CLERK_SECRET_KEY="your-clerk-secret-key"
+
+   # Clerk URLs
+   NEXT_PUBLIC_CLERK_SIGN_IN_URL="/login"
+   NEXT_PUBLIC_CLERK_SIGN_UP_URL="/register"
+   NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL="/events"
+   NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL="/events"
+   ```
+
+4. **Run database migrations**
+
+   ```bash
+   bun db:push
+   ```
+
+5. **Start the development server**
+
+   ```bash
+   bun dev
+   ```
+
+6. **Open your browser**
+   Navigate to [http://localhost:3000](http://localhost:3000)
+
+## 📁 Project Structure
+
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── (auth)/            # Authentication pages
+│   ├── (main)/            # Main application
+│   │   ├── (private)/     # Protected routes
+│   │   └── (public)/      # Public booking pages
+├── components/            # Reusable UI components
+│   ├── forms/            # Form components
+│   ├── skeletons/        # Loading skeletons
+│   └── ui/               # shadcn/ui components
+├── lib/                  # Utilities and configurations
+│   ├── actions/          # Server actions
+│   ├── db/              # Database schema and connection
+│   ├── types/           # TypeScript type definitions
+│   └── validations/     # Zod validation schemas
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🎯 Usage
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Sign Up/Login**: Create an account or login with Clerk
+2. **Create Events**: Set up your schedulable events with duration and details
+3. **Set Availability**: Configure your working hours and availability
+4. **Share Your Link**: Give others your booking link to schedule with you
+5. **Manage Bookings**: View and manage your scheduled events
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🔧 Available Scripts
 
-## Learn More
+- `bun dev` - Start development server
+- `bun build` - Build for production
+- `bun start` - Start production server
+- `bun lint` - Run ESLint
+- `bun db:push` - Push database schema changes
+- `bun db:studio` - Open Drizzle Studio
 
-To learn more about Next.js, take a look at the following resources:
+## 🤝 Contributing
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+This is a personal project, but feel free to fork it and make it your own! If you find bugs or have suggestions, open an issue.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📄 License
 
-## Deploy on Vercel
+This project is for educational purposes. Feel free to use it as inspiration for your own scheduling app!
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Built with ❤️ using Next.js 15 and modern web technologies.
