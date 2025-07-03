@@ -246,7 +246,12 @@ function ScheduleForm({ schedulePromise }: Props) {
                           All Timezones
                         </div>
                         {Intl.supportedValuesOf("timeZone")
-                          .filter((tz) => !COMMON_TIMEZONES.includes(tz as any))
+                          .filter(
+                            (tz) =>
+                              !(COMMON_TIMEZONES as readonly string[]).includes(
+                                tz,
+                              ),
+                          )
                           .map((tz) => (
                             <SelectItem key={`all-${tz}`} value={tz}>
                               {formatTimezoneDisplay(tz)}

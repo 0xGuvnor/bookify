@@ -32,9 +32,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { updateEvent, deleteEvent } from "@/lib/actions/events";
-import { eventFormSchema, type EventFormData } from "@/lib/validations";
+import { deleteEvent, updateEvent } from "@/lib/actions/events";
 import type { GetEventResult } from "@/lib/types";
+import { eventFormSchema, type EventFormData } from "@/lib/validations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   CalendarIcon,
@@ -45,7 +45,7 @@ import {
   Trash2Icon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState, useTransition, use } from "react";
+import { use, useEffect, useMemo, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -59,6 +59,20 @@ function EditEventForm({ eventPromise, eventId }: Props) {
   const eventResult = use(eventPromise);
   const [participantsInput, setParticipantsInput] = useState("");
   const [isPending, startTransition] = useTransition();
+
+  // Initialize form with default values
+  const form = useForm<EventFormData>({
+    resolver: zodResolver(eventFormSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      duration: 30,
+      location: "",
+      meetingLink: "",
+      isActive: true,
+      participants: [],
+    },
+  });
 
   // Handle case where event doesn't exist
   if (!eventResult.success || !eventResult.event) {
@@ -91,13 +105,19 @@ function EditEventForm({ eventPromise, eventId }: Props) {
 
   const event = eventResult.event;
 
-  // Parse participants from JSON string
-  const initialParticipants = JSON.parse(event.participants) as string[];
-  const initialParticipantsInput = initialParticipants.join(", ");
+  // Memoize the parsed participants to prevent infinite re-renders
+  const { initialParticipants, initialParticipantsInput } = useMemo(() => {
+    const participants = JSON.parse(event.participants) as string[];
+    const participantsInput = participants.join(", ");
+    return {
+      initialParticipants: participants,
+      initialParticipantsInput: participantsInput,
+    };
+  }, [event.participants]);
 
-  const form = useForm<EventFormData>({
-    resolver: zodResolver(eventFormSchema),
-    defaultValues: {
+  // Update form with actual event data once we know the event exists
+  useEffect(() => {
+    form.reset({
       title: event.title,
       description: event.description || "",
       duration: event.duration,
@@ -105,13 +125,19 @@ function EditEventForm({ eventPromise, eventId }: Props) {
       meetingLink: event.meetingLink || "",
       isActive: event.isActive,
       participants: initialParticipants,
-    },
-  });
-
-  // Set initial participants input
-  useState(() => {
+    });
     setParticipantsInput(initialParticipantsInput);
-  });
+  }, [
+    event.title,
+    event.description,
+    event.duration,
+    event.location,
+    event.meetingLink,
+    event.isActive,
+    initialParticipants,
+    initialParticipantsInput,
+    form,
+  ]);
 
   function handleSubmit(data: EventFormData) {
     // Clear any existing errors

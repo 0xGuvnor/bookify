@@ -79,18 +79,6 @@ function EventCard({ eventsPromise }: Props) {
     }
   };
 
-  const getEventType = (
-    duration: number,
-    location?: string | null,
-    meetingLink?: string | null,
-  ) => {
-    if (meetingLink) return "meeting";
-    if (location) return "consultation";
-    if (duration >= 120) return "workshop";
-    if (duration >= 60) return "interview";
-    return "demo";
-  };
-
   const getLocationType = (
     location?: string | null,
     meetingLink?: string | null,
@@ -128,11 +116,6 @@ function EventCard({ eventsPromise }: Props) {
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {result.events.map((event) => {
-        const eventType = getEventType(
-          event.duration,
-          event.location,
-          event.meetingLink,
-        );
         const locationType = getLocationType(event.location, event.meetingLink);
         const LocationIcon = locationIcons[locationType];
         const participants = getParticipants(event.participants);
@@ -284,13 +267,6 @@ function EventCard({ eventsPromise }: Props) {
                     {participants.length === 1 ? "attendee" : "attendees"}
                   </span>
                 </div>
-
-                <Badge
-                  variant="secondary"
-                  className="text-xs font-medium capitalize"
-                >
-                  {eventType}
-                </Badge>
               </div>
             </CardContent>
           </Card>
