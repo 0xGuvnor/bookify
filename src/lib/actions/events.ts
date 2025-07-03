@@ -246,10 +246,47 @@ export async function getEvents(userId: string): Promise<GetEventsResult> {
     // Return success with events
     return {
       success: true,
-      events,
+      data: events,
     };
   } catch (error) {
     console.error("Failed to get events:", error);
+    return {
+      success: false,
+      message: "Something went wrong while fetching events. Please try again.",
+    };
+  }
+}
+
+export async function getPublicEvents(
+  userId: string,
+): Promise<GetEventsResult> {
+  try {
+    if (!userId) {
+      return {
+        success: false,
+        message: "User ID is required to fetch events.",
+      };
+    }
+
+    // Get only active events for the specified user
+    const events = await db
+      .select()
+      .from(eventsTable)
+      .where(
+        and(
+          eq(eventsTable.clerkUserId, userId),
+          eq(eventsTable.isActive, true),
+        ),
+      )
+      .orderBy(desc(eventsTable.createdAt));
+
+    // Return success with events
+    return {
+      success: true,
+      data: events,
+    };
+  } catch (error) {
+    console.error("Failed to get public events:", error);
     return {
       success: false,
       message: "Something went wrong while fetching events. Please try again.",
@@ -295,7 +332,7 @@ export async function getEvent(
     // Return success with the event
     return {
       success: true,
-      event: events[0],
+      data: events[0],
     };
   } catch (error) {
     console.error("Failed to get event:", error);

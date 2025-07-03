@@ -27,6 +27,7 @@ import {
 import { DaysOfWeek } from "@/lib/db/schema";
 import type { GetScheduleResult } from "@/lib/types";
 import {
+  convertAvailabilitiesTimezone,
   detectOverlaps,
   getDefaultAvailabilityForDay,
   normalizeTimeFormat,
@@ -52,8 +53,13 @@ function ScheduleForm({ schedulePromise }: Props) {
   >(new Map());
 
   const existingSchedule = scheduleResult.success
-    ? scheduleResult.schedule
+    ? scheduleResult.data
     : undefined;
+
+  const [previousTimezone, setPreviousTimezone] = useState<string>(
+    existingSchedule?.timezone ||
+      Intl.DateTimeFormat().resolvedOptions().timeZone,
+  );
   const isUpdate = !!existingSchedule;
 
   // Initialize form with existing data or defaults
@@ -129,6 +135,57 @@ function ScheduleForm({ schedulePromise }: Props) {
     });
     return () => subscription.unsubscribe();
   }, [form, validateOverlaps]);
+
+  // Watch for timezone changes and convert existing time slots
+  useEffect(() => {
+    const subscription = form.watch((value, { name, type }) => {
+      if (name === "timezone" && type === "change") {
+        const newTimezone = value.timezone;
+        const currentAvailabilities = form.getValues("availabilities");
+
+        if (
+          newTimezone &&
+          newTimezone !== previousTimezone &&
+          currentAvailabilities.length > 0
+        ) {
+          try {
+            // Convert existing time slots to the new timezone
+            const convertedAvailabilities = convertAvailabilitiesTimezone(
+              currentAvailabilities,
+              previousTimezone,
+              newTimezone,
+            );
+
+            // Update the form with converted times
+            form.setValue("availabilities", convertedAvailabilities, {
+              shouldValidate: true,
+              shouldDirty: true,
+            });
+
+            // Update the previous timezone
+            setPreviousTimezone(newTimezone);
+
+            // Show a toast notification about the conversion
+            toast.success("Time slots converted to new timezone", {
+              description: `Your existing time slots have been converted from ${previousTimezone} to ${newTimezone}.`,
+              duration: 4000,
+            });
+          } catch (error) {
+            console.error("Error converting time slots:", error);
+            toast.error("Failed to convert time slots", {
+              description:
+                "Please check your time slots after changing timezone.",
+              duration: 4000,
+            });
+          }
+        } else if (newTimezone && newTimezone !== previousTimezone) {
+          // Update previous timezone even if no availabilities exist
+          setPreviousTimezone(newTimezone);
+        }
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form, previousTimezone]);
 
   // Initial validation on mount if there are existing availabilities
   useEffect(() => {

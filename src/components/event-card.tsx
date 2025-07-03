@@ -35,7 +35,7 @@ interface Props {
 function EventCard({ eventsPromise }: Props) {
   const result = use(eventsPromise);
 
-  if (!result.success || !result.events) {
+  if (!result.success || !result.data) {
     return (
       <div className="py-8 text-center">
         <p className="text-lg text-gray-500">
@@ -45,7 +45,7 @@ function EventCard({ eventsPromise }: Props) {
     );
   }
 
-  if (result.events.length === 0) {
+  if (result.data.length === 0) {
     return (
       <div className="py-12 text-center">
         <div className="mb-4 text-6xl">📅</div>
@@ -115,7 +115,7 @@ function EventCard({ eventsPromise }: Props) {
 
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {result.events.map((event) => {
+      {result.data.map((event) => {
         const locationType = getLocationType(event.location, event.meetingLink);
         const LocationIcon = locationIcons[locationType];
         const participants = getParticipants(event.participants);

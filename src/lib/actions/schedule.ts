@@ -33,7 +33,7 @@ export async function getSchedule(userId: string): Promise<GetScheduleResult> {
       return {
         success: true,
         message: "No schedule found. You can create one to get started!",
-        schedule: undefined,
+        data: undefined,
       };
     }
 
@@ -50,7 +50,7 @@ export async function getSchedule(userId: string): Promise<GetScheduleResult> {
     // Return success with schedule and availabilities
     return {
       success: true,
-      schedule: {
+      data: {
         ...schedule[0],
         availabilities,
       },
@@ -150,7 +150,7 @@ export async function createSchedule(
     return {
       success: true,
       message: "Schedule created successfully!",
-      schedule: {
+      data: {
         ...newSchedule,
         availabilities: createdAvailabilities,
       },
@@ -257,7 +257,7 @@ export async function updateSchedule(
     return {
       success: true,
       message: "Schedule updated successfully!",
-      schedule: {
+      data: {
         ...updatedSchedule,
         availabilities: updatedAvailabilities,
       },

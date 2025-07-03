@@ -1,56 +1,57 @@
 import type { Event, Schedule, ScheduleAvailability } from "@/lib/db/schema";
 
-export type CreateEventResult = {
+// Base action result interface
+interface BaseActionResult {
   success: boolean;
   message?: string;
+}
+
+// Generic result for operations that can have validation errors
+interface ActionResultWithErrors extends BaseActionResult {
   errors?: Record<string, string[]>;
-};
+}
 
-export type UpdateEventResult = {
-  success: boolean;
-  message?: string;
+// Generic result for operations that return data
+interface ActionResultWithData<T> extends BaseActionResult {
+  data?: T;
+}
+
+// Generic result for operations that can have validation errors AND return data
+interface ActionResultWithErrorsAndData<T> extends BaseActionResult {
   errors?: Record<string, string[]>;
-};
+  data?: T;
+}
 
-export type DeleteEventResult = {
-  success: boolean;
-  message?: string;
-};
+// Specific result types using the generic bases
+export type CreateEventResult = ActionResultWithErrors;
+export type UpdateEventResult = ActionResultWithErrors;
+export type DeleteEventResult = BaseActionResult;
 
-export type GetEventsResult = {
-  success: boolean;
-  message?: string;
-  events?: Event[];
-};
+export type GetEventsResult = ActionResultWithData<Event[]>;
+export type GetEventResult = ActionResultWithData<Event>;
 
-export type GetEventResult = {
-  success: boolean;
-  message?: string;
-  event?: Event;
-};
-
-export type GetScheduleResult = {
-  success: boolean;
-  message?: string;
-  schedule?: Schedule & {
+export type GetScheduleResult = ActionResultWithData<
+  Schedule & {
     availabilities: ScheduleAvailability[];
-  };
-};
+  }
+>;
 
-export type CreateScheduleResult = {
-  success: boolean;
-  message?: string;
-  errors?: Record<string, string[]>;
-  schedule?: Schedule & {
+export type CreateScheduleResult = ActionResultWithErrorsAndData<
+  Schedule & {
     availabilities: ScheduleAvailability[];
-  };
-};
+  }
+>;
 
-export type UpdateScheduleResult = {
-  success: boolean;
-  message?: string;
-  errors?: Record<string, string[]>;
-  schedule?: Schedule & {
+export type UpdateScheduleResult = ActionResultWithErrorsAndData<
+  Schedule & {
     availabilities: ScheduleAvailability[];
-  };
+  }
+>;
+
+// Export the base types for potential reuse in other parts of the app
+export type {
+  BaseActionResult,
+  ActionResultWithErrors,
+  ActionResultWithData,
+  ActionResultWithErrorsAndData,
 };

@@ -123,6 +123,189 @@ export function normalizeTimeFormat(time: string): string {
   return time;
 }
 
+// Timezone conversion utilities
+export function convertTimeToTimezone(
+  time: string,
+  fromTimezone: string,
+  toTimezone: string,
+): string {
+  try {
+    if (fromTimezone === toTimezone) {
+      return time;
+    }
+
+    // Parse the time
+    const [hours, minutes] = time.split(":").map(Number);
+
+    // Create a date for today
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth();
+    const day = today.getDate();
+
+    // Create a date object with the given time
+    const sourceDate = new Date(year, month, day, hours, minutes);
+
+    // Convert to the source timezone first, then to target timezone
+    // This approach simulates having a time in the source timezone
+    const sourceTimestamp = sourceDate.getTime();
+
+    // Get the timezone offset for both timezones at this date
+    const sourceOffset = getTimezoneOffsetInMinutes(fromTimezone, sourceDate);
+    const targetOffset = getTimezoneOffsetInMinutes(toTimezone, sourceDate);
+
+    // Calculate the time difference
+    const offsetDifference = targetOffset - sourceOffset;
+
+    // Apply the offset difference
+    const targetDate = new Date(sourceTimestamp + offsetDifference * 60000);
+
+    // Format the result
+    const targetHours = targetDate.getHours().toString().padStart(2, "0");
+    const targetMinutes = targetDate.getMinutes().toString().padStart(2, "0");
+
+    return `${targetHours}:${targetMinutes}`;
+  } catch (error) {
+    console.error("Error converting time between timezones:", error);
+    return time; // Return original time if conversion fails
+  }
+}
+
+// Get timezone offset in minutes for a given timezone and date
+function getTimezoneOffsetInMinutes(timezone: string, date: Date): number {
+  try {
+    // Create formatters for UTC and the target timezone
+    const utcDate = new Date(date.toLocaleString("en-US", { timeZone: "UTC" }));
+    const tzDate = new Date(
+      date.toLocaleString("en-US", { timeZone: timezone }),
+    );
+
+    // Calculate the offset in minutes
+    const offsetMs = tzDate.getTime() - utcDate.getTime();
+    return Math.round(offsetMs / 60000);
+  } catch (error) {
+    console.error("Error getting timezone offset:", error);
+    return 0;
+  }
+}
+
+// More robust timezone conversion using proper date handling
+export function convertTimeToTimezoneAdvanced(
+  time: string,
+  fromTimezone: string,
+  toTimezone: string,
+): string {
+  try {
+    if (fromTimezone === toTimezone) {
+      return time;
+    }
+
+    // Parse the input time
+    const [hours, minutes] = time.split(":").map(Number);
+
+    // Create a date for today
+    const today = new Date();
+
+    // Create a date string in ISO format for the source timezone
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    const hourStr = String(hours).padStart(2, "0");
+    const minuteStr = String(minutes).padStart(2, "0");
+
+    // Create the date assuming it's in the source timezone
+    const dateString = `${year}-${month}-${day}T${hourStr}:${minuteStr}:00`;
+
+    // Create a temporary date to work with
+    const tempDate = new Date(dateString);
+
+    // Get what this time would be in each timezone
+    const sourceFormatter = new Intl.DateTimeFormat("en-CA", {
+      timeZone: fromTimezone,
+      hour12: false,
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    const targetFormatter = new Intl.DateTimeFormat("en-CA", {
+      timeZone: toTimezone,
+      hour12: false,
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    // Get the offset difference between timezones
+    const utcDate = new Date();
+    const sourceInUTC = new Date(
+      utcDate.toLocaleString("en-US", { timeZone: fromTimezone }),
+    );
+    const targetInUTC = new Date(
+      utcDate.toLocaleString("en-US", { timeZone: toTimezone }),
+    );
+    const offsetDiff = targetInUTC.getTime() - sourceInUTC.getTime();
+
+    // Apply the offset to our original time
+    const resultDate = new Date(tempDate.getTime() + offsetDiff);
+
+    // Format the result
+    const resultHours = resultDate.getHours().toString().padStart(2, "0");
+    const resultMinutes = resultDate.getMinutes().toString().padStart(2, "0");
+
+    return `${resultHours}:${resultMinutes}`;
+  } catch (error) {
+    console.error("Error converting time between timezones:", error);
+    return time; // Return original time if conversion fails
+  }
+}
+
+// Convert a time slot between timezones
+export function convertAvailabilitySlotTimezone(
+  slot: AvailabilitySlotData,
+  fromTimezone: string,
+  toTimezone: string,
+): AvailabilitySlotData {
+  if (fromTimezone === toTimezone) {
+    return slot;
+  }
+
+  try {
+    const convertedStartTime = convertTimeToTimezoneAdvanced(
+      slot.startTime,
+      fromTimezone,
+      toTimezone,
+    );
+    const convertedEndTime = convertTimeToTimezoneAdvanced(
+      slot.endTime,
+      fromTimezone,
+      toTimezone,
+    );
+
+    return {
+      ...slot,
+      startTime: convertedStartTime,
+      endTime: convertedEndTime,
+    };
+  } catch (error) {
+    console.error("Error converting availability slot timezone:", error);
+    return slot; // Return original slot if conversion fails
+  }
+}
+
+// Convert all availability slots from one timezone to another
+export function convertAvailabilitiesTimezone(
+  availabilities: AvailabilitySlotData[],
+  fromTimezone: string,
+  toTimezone: string,
+): AvailabilitySlotData[] {
+  if (fromTimezone === toTimezone) {
+    return availabilities;
+  }
+
+  return availabilities.map((slot) =>
+    convertAvailabilitySlotTimezone(slot, fromTimezone, toTimezone),
+  );
+}
+
 // Helper function to get default availability for a day
 export function getDefaultAvailabilityForDay(day: string) {
   const isWeekend = day === DaysOfWeek.SUNDAY || day === DaysOfWeek.SATURDAY;
