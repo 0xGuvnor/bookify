@@ -64,6 +64,7 @@ async function BookPage({ params }: Props) {
           <PublicEventsList
             eventsPromise={publicEventsPromise}
             userName={user.firstName || "this user"}
+            userId={userId}
           />
         </Suspense>
       </div>

@@ -84,6 +84,32 @@ export const scheduleAvailabilitiesTable = pgTable(
   ],
 );
 
+export const bookingsTable = pgTable(
+  "bookings",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    eventId: uuid("event_id")
+      .notNull()
+      .references(() => eventsTable.id, { onDelete: "cascade" }),
+    eventOwnerId: text("event_owner_id").notNull(), // Clerk user ID of the event owner
+    bookerName: text("booker_name").notNull(),
+    bookerEmail: text("booker_email").notNull(),
+    bookerNotes: text("booker_notes"),
+    startTime: timestamp("start_time").notNull(),
+    endTime: timestamp("end_time").notNull(),
+    status: text("status").notNull().default("confirmed"), // confirmed, cancelled, completed
+    googleCalendarEventId: text("google_calendar_event_id"), // For calendar integration
+    ...timestamps,
+  },
+  (table) => [
+    index("idx_bookings_event_id").on(table.eventId),
+    index("idx_bookings_event_owner_id").on(table.eventOwnerId),
+    index("idx_bookings_booker_email").on(table.bookerEmail),
+    index("idx_bookings_start_time").on(table.startTime),
+    index("idx_bookings_status").on(table.status),
+  ],
+);
+
 // Relations
 export const schedulesRelations = relations(schedulesTable, ({ many }) => ({
   availabilities: many(scheduleAvailabilitiesTable),
@@ -99,6 +125,17 @@ export const scheduleAvailabilitiesRelations = relations(
   }),
 );
 
+export const eventsRelations = relations(eventsTable, ({ many }) => ({
+  bookings: many(bookingsTable),
+}));
+
+export const bookingsRelations = relations(bookingsTable, ({ one }) => ({
+  event: one(eventsTable, {
+    fields: [bookingsTable.eventId],
+    references: [eventsTable.id],
+  }),
+}));
+
 export type Event = typeof eventsTable.$inferSelect;
 export type NewEvent = typeof eventsTable.$inferInsert;
 
@@ -109,6 +146,9 @@ export type ScheduleAvailability =
   typeof scheduleAvailabilitiesTable.$inferSelect;
 export type NewScheduleAvailability =
   typeof scheduleAvailabilitiesTable.$inferInsert;
+
+export type Booking = typeof bookingsTable.$inferSelect;
+export type NewBooking = typeof bookingsTable.$inferInsert;
 
 // Type-safe day of week constants
 export const DaysOfWeek = {

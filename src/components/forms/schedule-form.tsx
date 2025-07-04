@@ -10,7 +10,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -26,6 +25,7 @@ import {
 } from "@/lib/constants";
 import { DaysOfWeek } from "@/lib/db/schema";
 import type { GetScheduleResult } from "@/lib/types";
+import { formatTimeDisplay, generateTimeSlots } from "@/lib/utils";
 import {
   convertAvailabilitiesTimezone,
   detectOverlaps,
@@ -40,6 +40,8 @@ import { AlertTriangle, Clock, Globe, Plus, Trash2 } from "lucide-react";
 import { use, useCallback, useEffect, useState, useTransition } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
+
+const TIME_SLOTS = generateTimeSlots();
 
 interface Props {
   schedulePromise: Promise<GetScheduleResult>;
@@ -414,13 +416,26 @@ function ScheduleForm({ schedulePromise }: Props) {
                               render={({ field }) => (
                                 <FormItem className="flex-1">
                                   <FormLabel>Start Time</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      type="time"
-                                      {...field}
-                                      className="w-full"
-                                    />
-                                  </FormControl>
+                                  <Select
+                                    onValueChange={field.onChange}
+                                    value={field.value}
+                                  >
+                                    <FormControl>
+                                      <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Select start time" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      {TIME_SLOTS.map((time) => (
+                                        <SelectItem
+                                          key={`start-${time}`}
+                                          value={time}
+                                        >
+                                          {formatTimeDisplay(time)}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
                                   <FormMessage />
                                 </FormItem>
                               )}
@@ -432,13 +447,26 @@ function ScheduleForm({ schedulePromise }: Props) {
                               render={({ field }) => (
                                 <FormItem className="flex-1">
                                   <FormLabel>End Time</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      type="time"
-                                      {...field}
-                                      className="w-full"
-                                    />
-                                  </FormControl>
+                                  <Select
+                                    onValueChange={field.onChange}
+                                    value={field.value}
+                                  >
+                                    <FormControl>
+                                      <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Select end time" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      {TIME_SLOTS.map((time) => (
+                                        <SelectItem
+                                          key={`end-${time}`}
+                                          value={time}
+                                        >
+                                          {formatTimeDisplay(time)}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
                                   <FormMessage />
                                 </FormItem>
                               )}

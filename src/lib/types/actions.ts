@@ -1,4 +1,10 @@
-import type { Event, Schedule, ScheduleAvailability } from "@/lib/db/schema";
+import type {
+  Booking,
+  Event,
+  Schedule,
+  ScheduleAvailability,
+} from "@/lib/db/schema";
+import type { TimeRangeData } from "@/lib/validations";
 
 // Base action result interface
 interface BaseActionResult {
@@ -48,10 +54,52 @@ export type UpdateScheduleResult = ActionResultWithErrorsAndData<
   }
 >;
 
+export type GetAvailabilitiesResult = ActionResultWithData<TimeRangeData[]>;
+
 // Export the base types for potential reuse in other parts of the app
 export type {
-  BaseActionResult,
-  ActionResultWithErrors,
   ActionResultWithData,
+  ActionResultWithErrors,
   ActionResultWithErrorsAndData,
+  BaseActionResult,
 };
+
+// Google Calendar types
+export interface CalendarEvent {
+  id: string | null | undefined;
+  summary: string;
+  description: string | null;
+  start: string | null | undefined;
+  end: string | null | undefined;
+  location: string | null;
+  attendees: Array<{
+    email: string | null | undefined;
+    displayName: string | null | undefined;
+    responseStatus: string | null | undefined;
+  }>;
+  status: string | null | undefined;
+  htmlLink: string | null | undefined;
+  created: string | null | undefined;
+  updated: string | null | undefined;
+}
+
+export type GetCalendarEventTimesResult = ActionResultWithData<CalendarEvent[]>;
+
+// Calendar event creation result type
+export type CreateCalendarEventResult = ActionResultWithData<{
+  eventId: string;
+  htmlLink: string;
+}>;
+
+// Booking result types
+export type CreateBookingResult = ActionResultWithErrorsAndData<Booking>;
+export type UpdateBookingResult = ActionResultWithErrorsAndData<Booking>;
+export type DeleteBookingResult = BaseActionResult;
+export type GetBookingsResult = ActionResultWithData<Booking[]>;
+export type GetBookingResult = ActionResultWithData<Booking>;
+
+// Available time slots result type
+export type GetAvailableTimeSlotsResult = ActionResultWithData<string[]>;
+
+// Available dates result type
+export type GetAvailableDatesResult = ActionResultWithData<Date[]>;

@@ -1,18 +1,20 @@
 "use client";
 
-import { use } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Clock, MapPin, Link2, Calendar } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import type { GetEventsResult } from "@/lib/types";
+import { Calendar, Clock, Link2, MapPin } from "lucide-react";
+import Link from "next/link";
+import { use } from "react";
 
 interface Props {
   eventsPromise: Promise<GetEventsResult>;
   userName: string;
+  userId: string;
 }
 
-function PublicEventsList({ eventsPromise, userName }: Props) {
+function PublicEventsList({ eventsPromise, userName, userId }: Props) {
   const result = use(eventsPromise);
 
   if (!result.success) {
@@ -114,13 +116,8 @@ function PublicEventsList({ eventsPromise, userName }: Props) {
                 </div>
 
                 <div className="flex justify-end">
-                  <Button
-                    onClick={() => {
-                      // TODO: Navigate to booking page for this specific event
-                      console.log(`Booking event ${event.id}`);
-                    }}
-                  >
-                    Book Event
+                  <Button asChild>
+                    <Link href={`/book/${userId}/${event.id}`}>Book Event</Link>
                   </Button>
                 </div>
               </CardContent>

@@ -1,4 +1,6 @@
+import BookingForm from "@/components/forms/booking-form";
 import { getEvent } from "@/lib/actions/events";
+import { getSchedule } from "@/lib/actions/schedule";
 
 interface Props {
   params: Promise<{
@@ -10,10 +12,13 @@ interface Props {
 async function BookEventPage({ params }: Props) {
   const { userId, eventId } = await params;
 
-  const result = await getEvent(userId, eventId);
+  const [eventResult, scheduleResult] = await Promise.all([
+    getEvent(userId, eventId),
+    getSchedule(userId),
+  ]);
 
   // Handle case where event doesn't exist or result is not successful
-  if (!result.success || !result.data) {
+  if (!eventResult.success || !eventResult.data) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center px-4">
         <div className="text-center">
@@ -28,7 +33,13 @@ async function BookEventPage({ params }: Props) {
     );
   }
 
-  const event = result.data;
+  const event = eventResult.data;
+
+  // Get timezone from user's schedule, fallback to UTC
+  const timezone =
+    scheduleResult.success && scheduleResult.data
+      ? scheduleResult.data.timezone
+      : "UTC";
 
   return (
     <div className="px-4 pb-12">
@@ -76,11 +87,13 @@ async function BookEventPage({ params }: Props) {
             )}
           </div>
 
-          {/* TODO: Add booking form here */}
-          <div className="mt-10 rounded-lg border border-blue-100 bg-gradient-to-r from-blue-50 to-indigo-50 p-6">
-            <p className="text-center font-medium text-gray-600">
-              Booking form coming soon! 📅
-            </p>
+          {/* Booking Form */}
+          <div className="mt-10">
+            <BookingForm
+              event={event}
+              eventOwnerId={userId}
+              timezone={timezone}
+            />
           </div>
         </div>
       </div>

@@ -92,7 +92,7 @@ export default function Navbar({ user }: Props) {
             {user ? (
               // Private navigation for authenticated users
               PrivateNavLinks.map((link) => {
-                const isActive = pathname === link.route;
+                const isActive = pathname.startsWith(link.route);
                 return (
                   <Link
                     key={link.route}
