@@ -10,6 +10,7 @@ import type {
   GetEventResult,
 } from "@/lib/types";
 import { eventFormSchema, type EventFormData } from "@/lib/validations";
+import { isValidUUID } from "@/lib/utils";
 import { auth } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
 import { desc } from "drizzle-orm";
@@ -99,6 +100,14 @@ export async function updateEvent(
       };
     }
 
+    // Validate UUID format before proceeding
+    if (!isValidUUID(eventId)) {
+      return {
+        success: false,
+        message: "Event not found or you don't have permission to edit it.",
+      };
+    }
+
     // Validate the data using our Zod schema
     const validatedFields = eventFormSchema.safeParse(data);
 
@@ -183,6 +192,14 @@ export async function deleteEvent(eventId: string): Promise<DeleteEventResult> {
       return {
         success: false,
         message: "You must be logged in to delete an event.",
+      };
+    }
+
+    // Validate UUID format before proceeding
+    if (!isValidUUID(eventId)) {
+      return {
+        success: false,
+        message: "Event not found or you don't have permission to delete it.",
       };
     }
 
@@ -310,6 +327,14 @@ export async function getEvent(
       return {
         success: false,
         message: "Event ID is required to fetch the event.",
+      };
+    }
+
+    // Validate UUID format before querying database
+    if (!isValidUUID(eventId)) {
+      return {
+        success: false,
+        message: "Event not found or you don't have permission to view it.",
       };
     }
 
