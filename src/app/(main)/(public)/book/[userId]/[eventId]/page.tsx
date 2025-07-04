@@ -1,4 +1,3 @@
-import { use } from "react";
 import { getEvent } from "@/lib/actions/events";
 
 interface Props {
