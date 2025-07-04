@@ -77,26 +77,26 @@ function EditEventForm({ eventPromise, eventId }: Props) {
   // Memoize the parsed participants - this hook must be called before any returns
   const { initialParticipants, initialParticipantsInput } = useMemo(() => {
     // Handle case where event doesn't exist or is invalid
-    if (!eventResult.success || !eventResult.event) {
+    if (!eventResult.success || !eventResult.data) {
       return {
         initialParticipants: [],
         initialParticipantsInput: "",
       };
     }
 
-    const participants = JSON.parse(eventResult.event.participants) as string[];
+    const participants = JSON.parse(eventResult.data.participants) as string[];
     const participantsInput = participants.join(", ");
     return {
       initialParticipants: participants,
       initialParticipantsInput: participantsInput,
     };
-  }, [eventResult.success, eventResult.event?.participants]);
+  }, [eventResult.success, eventResult.data?.participants]);
 
   // Update form with actual event data - this hook must be called before any returns
   useEffect(() => {
     // Only update form if we have a valid event
-    if (eventResult.success && eventResult.event) {
-      const event = eventResult.event;
+    if (eventResult.success && eventResult.data) {
+      const event = eventResult.data;
       form.reset({
         title: event.title,
         description: event.description || "",
@@ -110,14 +110,14 @@ function EditEventForm({ eventPromise, eventId }: Props) {
     }
   }, [
     eventResult.success,
-    eventResult.event,
+    eventResult.data,
     initialParticipants,
     initialParticipantsInput,
     form,
   ]);
 
   // Handle case where event doesn't exist - now after all hooks are called
-  if (!eventResult.success || !eventResult.event) {
+  if (!eventResult.success || !eventResult.data) {
     return (
       <Card className="mx-auto w-full max-w-2xl">
         <CardHeader>
@@ -145,7 +145,7 @@ function EditEventForm({ eventPromise, eventId }: Props) {
     );
   }
 
-  const event = eventResult.event;
+  const event = eventResult.data;
 
   function handleSubmit(data: EventFormData) {
     // Clear any existing errors
