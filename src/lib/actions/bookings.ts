@@ -29,7 +29,6 @@ import {
   addMinutes,
   areIntervalsOverlapping,
   eachDayOfInterval,
-  endOfDay,
   format,
   format as formatDateFns,
   getHours,
@@ -529,7 +528,6 @@ export async function getAvailableTimeSlots(
 
     // Generate time slots for the day (every 15 minutes from 6 AM to 11 PM)
     const startOfDayDate = startOfDay(date);
-    const endOfDayDate = endOfDay(date);
     const timeSlots: Date[] = [];
 
     // Start from 6 AM

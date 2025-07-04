@@ -240,7 +240,7 @@ function BookingForm({ event, eventOwnerId, timezone }: BookingFormProps) {
               <FormField
                 control={form.control}
                 name="selectedDate"
-                render={({ field }) => (
+                render={() => (
                   <FormItem>
                     <FormControl>
                       {isLoadingDates ? (

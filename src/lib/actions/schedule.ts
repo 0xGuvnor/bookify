@@ -28,7 +28,7 @@ import {
   isValid,
   parse,
 } from "date-fns";
-import { format, fromZonedTime, toZonedTime } from "date-fns-tz";
+import { format } from "date-fns-tz";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -425,16 +425,6 @@ function isValidTimeRange(startTime: string, endTime: string): boolean {
   const start = createTimeDate(startTime);
   const end = createTimeDate(endTime);
   return isValid(start) && isValid(end) && differenceInMinutes(end, start) > 0;
-}
-
-// Helper function to convert a date to a specific timezone
-function convertToTimezone(date: Date, timezone: string): Date {
-  return toZonedTime(date, timezone);
-}
-
-// Helper function to convert a zoned time back to UTC
-function convertFromTimezone(date: Date, timezone: string): Date {
-  return fromZonedTime(date, timezone);
 }
 
 export async function getAvailabilities(

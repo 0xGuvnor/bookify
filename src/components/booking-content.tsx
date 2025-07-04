@@ -78,7 +78,7 @@ export function BookingContent({
             Booking Confirmed! 🎉
           </h1>
           <p className="text-gray-600">
-            Your booking has been confirmed successfully. You'll receive a
+            Your booking has been confirmed successfully. You&apos;ll receive a
             confirmation email shortly with all the details.
           </p>
         </div>
