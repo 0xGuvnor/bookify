@@ -1,6 +1,7 @@
 import { clerkClient, User } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import Image from "next/image";
 import { getPublicEvents } from "@/lib/actions";
 import PublicEventsList from "@/components/public-events-list";
 import PublicEventsSkeleton from "@/components/skeletons/public-events-skeleton";
@@ -38,9 +39,11 @@ async function BookPage({ params }: Props) {
       <div className="bg-card rounded-lg border p-6 shadow-sm">
         <div className="flex items-center space-x-4">
           {user.imageUrl && (
-            <img
+            <Image
               src={user.imageUrl}
               alt={`${user.firstName} ${user.lastName}`}
+              width={64}
+              height={64}
               className="size-16 rounded-full"
             />
           )}

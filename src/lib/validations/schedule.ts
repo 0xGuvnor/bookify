@@ -219,21 +219,6 @@ export function convertTimeToTimezoneAdvanced(
     // Create a temporary date to work with
     const tempDate = new Date(dateString);
 
-    // Get what this time would be in each timezone
-    const sourceFormatter = new Intl.DateTimeFormat("en-CA", {
-      timeZone: fromTimezone,
-      hour12: false,
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-
-    const targetFormatter = new Intl.DateTimeFormat("en-CA", {
-      timeZone: toTimezone,
-      hour12: false,
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-
     // Get the offset difference between timezones
     const utcDate = new Date();
     const sourceInUTC = new Date(
